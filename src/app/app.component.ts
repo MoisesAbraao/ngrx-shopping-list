@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { ShoppingItem } from './store/models/shopping-item.model';
-import { AddItemAction, DeleteItemAction } from './store/actions/shopping.actions';
+import { AddItemAction, DeleteItemAction, LoadShoppingAction } from './store/actions/shopping.actions';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +12,19 @@ import { AddItemAction, DeleteItemAction } from './store/actions/shopping.action
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  shoppingItems$: Observable<Array<ShoppingItem>>;
+  shoppingItems: Observable<Array<ShoppingItem>>;
+  loading$: Observable<Boolean>;
+  error$: Observable<Error>;
   newShoppingItem: ShoppingItem = {id: '', name: ''};
+
   constructor(private store: Store<AppState>){}
 
   ngOnInit(): void {
-    this.shoppingItems$ = this.store.select(store => store.shopping);
+    this.shoppingItems = this.store.select(store => store.shopping.list);
+    this.loading$ = this.store.select(store => store.shopping.loading);
+    this.error$ = this.store.select(store => store.shopping.error);
+
+    this.store.dispatch(new LoadShoppingAction());
 
     // setTimeout(() => this.addItem(), 2000);
 
