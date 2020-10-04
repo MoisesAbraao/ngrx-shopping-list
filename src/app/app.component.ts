@@ -12,31 +12,25 @@ import { AddItemAction, DeleteItemAction, LoadShoppingAction } from './store/act
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  shoppingItems: Observable<Array<ShoppingItem>>;
-  loading$: Observable<Boolean>;
+  shoppingItems$: Observable<ShoppingItem[]>;
+  loading$: Observable<boolean>;
   error$: Observable<Error>;
   newShoppingItem: ShoppingItem = {id: '', name: ''};
 
-  constructor(private store: Store<AppState>){}
+  constructor(private store: Store<AppState>) {}
 
-  ngOnInit(): void {
-    this.shoppingItems = this.store.select(store => store.shopping.list);
+  ngOnInit() {
+    this.shoppingItems$ = this.store.select(store => store.shopping.list);
     this.loading$ = this.store.select(store => store.shopping.loading);
     this.error$ = this.store.select(store => store.shopping.error);
 
     this.store.dispatch(new LoadShoppingAction());
-
-    // setTimeout(() => this.addItem(), 2000);
-
   }
 
   addItem() {
     this.newShoppingItem.id = uuid();
-
     this.store.dispatch(new AddItemAction(this.newShoppingItem));
-
     this.newShoppingItem = {id: '', name: ''};
-
   }
 
   deleteItem(id: string) {
